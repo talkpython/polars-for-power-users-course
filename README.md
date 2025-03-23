@@ -1,2 +1,3 @@
-# polars-for-power-users-course
-Polars for Power Users Course
+# Polars for Power Users Course
+
+Something something, polars awesome, something something
