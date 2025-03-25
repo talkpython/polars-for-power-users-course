@@ -1,0 +1,125 @@
+>>> import polars as pl
+>>> sales = pl.read_excel("data/sales.xlsx")
+>>> sales
+shape: (1_000, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> levels = pl.read_excel("data/customer_levels.xlsx")
+>>> levels
+shape: (350, 2)
+┌──────────────┬──────────┐
+│ Company Name ┆ level    │
+│ ---          ┆ ---      │
+│ str          ┆ str      │
+╞══════════════╪══════════╡
+│ Abatz        ┆ diamond  │
+│ Agivu        ┆ silver   │
+│ Aibox        ┆ platinum │
+│ Ailane       ┆ silver   │
+│ Aimbo        ┆ diamond  │
+│ …            ┆ …        │
+│ Zoonder      ┆ silver   │
+│ Zoonoodle    ┆ silver   │
+│ Zooveo       ┆ silver   │
+│ Zoovu        ┆ platinum │
+│ Zoozzy       ┆ gold     │
+└──────────────┴──────────┘
+>>> levels = levels.rename({"Company Name":"company"})
+>>> sales.join(levels, on="company")
+shape: (997, 8)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┬────────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total ┆ level  │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   ┆ ---    │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   ┆ str    │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╪════════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   ┆ gold   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   ┆ gold   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   ┆ gold   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   ┆ gold   │
+│ MI-696-11 ┆ Zooveo    ┆ 2019-10-17    ┆ pen     ┆ -1       ┆ 30    ┆ -30   ┆ silver │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     ┆ …      │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  ┆ silver │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   ┆ silver │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   ┆ gold   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   ┆ silver │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   ┆ silver │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┴────────┘
+>>> inner = sales.join(levels, on="company")
+>>> inner.shape
+(997, 8)
+>>> inner.filter(pl.col("company") == "Zooxo")
+shape: (0, 8)
+┌─────────┬─────────┬───────────────┬─────────┬──────────┬───────┬───────┬───────┐
+│ invoice ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total ┆ level │
+│ ---     ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   ┆ ---   │
+│ str     ┆ str     ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   ┆ str   │
+╞═════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╪═══════╡
+└─────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┴───────┘
+>>> left = sales.join(levels, on="company", how="left")
+>>> left.shape
+(1000, 8)
+>>> left.filter(pl.col("company") == "Zooxo")
+shape: (3, 8)
+┌───────────┬─────────┬───────────────┬─────────┬──────────┬───────┬───────┬───────┐
+│ invoice   ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total ┆ level │
+│ ---       ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   ┆ ---   │
+│ str       ┆ str     ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   ┆ str   │
+╞═══════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╪═══════╡
+│ JQ-501-63 ┆ Zooxo   ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   ┆ null  │
+│ AR-913-16 ┆ Zooxo   ┆ 2019-01-24    ┆ shirt   ┆ 44       ┆ 22    ┆ 968   ┆ null  │
+│ WJ-189-51 ┆ Zooxo   ┆ 2019-10-16    ┆ shirt   ┆ 41       ┆ 10    ┆ 410   ┆ null  │
+└───────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┴───────┘
+>>> levels = pl.read_excel("data/customer_levels.xlsx")
+>>> levels
+shape: (350, 2)
+┌──────────────┬──────────┐
+│ Company Name ┆ level    │
+│ ---          ┆ ---      │
+│ str          ┆ str      │
+╞══════════════╪══════════╡
+│ Abatz        ┆ diamond  │
+│ Agivu        ┆ silver   │
+│ Aibox        ┆ platinum │
+│ Ailane       ┆ silver   │
+│ Aimbo        ┆ diamond  │
+│ …            ┆ …        │
+│ Zoonder      ┆ silver   │
+│ Zoonoodle    ┆ silver   │
+│ Zooveo       ┆ silver   │
+│ Zoovu        ┆ platinum │
+│ Zoozzy       ┆ gold     │
+└──────────────┴──────────┘
+>>> sales.join(levels, left_on="company", right_on="Company Name", how="left")
+shape: (1_000, 8)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┬────────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total ┆ level  │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   ┆ ---    │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   ┆ str    │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╪════════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   ┆ gold   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   ┆ null   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   ┆ gold   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   ┆ gold   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   ┆ gold   │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     ┆ …      │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  ┆ silver │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   ┆ silver │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   ┆ gold   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   ┆ silver │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   ┆ silver │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┴────────┘

@@ -1,0 +1,34 @@
+>>> import polars as pl
+>>> sales = pl.scan_csv("data/sales.csv", try_parse_dates=True)
+>>> query = (
+...     sales
+...     .filter(pl.col("company") == "Viva")
+...     .group_by("product").agg(
+...         pl.len(),
+...         pl.col("quantity").alias("qty_sum").sum(),
+...         pl.col("quantity").alias("qty_mean").mean()
+...     )
+... )
+>>> query
+<LazyFrame at 0x103DDE490>
+>>> result = query.collect()
+>>> result
+shape: (3, 4)
+┌─────────┬─────┬─────────┬──────────┐
+│ product ┆ len ┆ qty_sum ┆ qty_mean │
+│ ---     ┆ --- ┆ ---     ┆ ---      │
+│ str     ┆ u32 ┆ i64     ┆ f64      │
+╞═════════╪═════╪═════════╪══════════╡
+│ book    ┆ 2   ┆ 14      ┆ 7.0      │
+│ poster  ┆ 1   ┆ 46      ┆ 46.0     │
+│ pen     ┆ 2   ┆ 12      ┆ 6.0      │
+└─────────┴─────┴─────────┴──────────┘
+>>> query.explain()
+'AGGREGATE\n\t[len(), col("quantity").sum().alias("qty_sum"), col("quantity").mean().alias("qty_mean")] BY [col("product")] FROM\n  simple π 3/3 ["quantity", "product", ... 1 other column]\n    Csv SCAN [data/sales.csv]\n    PROJECT 3/7 COLUMNS\n    SELECTION: [(col("company")) == (String(Viva))]'
+>>> print(query.explain())
+AGGREGATE
+	[len(), col("quantity").sum().alias("qty_sum"), col("quantity").mean().alias("qty_mean")] BY [col("product")] FROM
+  simple π 3/3 ["quantity", "product", ... 1 other column]
+    Csv SCAN [data/sales.csv]
+    PROJECT 3/7 COLUMNS
+    SELECTION: [(col("company")) == (String(Viva))]

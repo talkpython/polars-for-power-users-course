@@ -1,0 +1,246 @@
+>>> import polars as pl
+>>> pl.read_excel("data/complicated.xlsx")
+Traceback (most recent call last):
+  File "<python-input-1>", line 1, in <module>
+    messy = pl.read_excel("data/complicated.xlsx")
+  File "/Users/TP/lib/python3.13/site-packages/polars/_utils/deprecation.py", line 92, in wrapper
+    return function(*args, **kwargs)
+  File "/Users/TP/lib/python3.13/site-packages/polars/_utils/deprecation.py", line 92, in wrapper
+    return function(*args, **kwargs)
+  File "/Users/TP/lib/python3.13/site-packages/polars/io/spreadsheet/functions.py", line 399, in read_excel
+    _read_spreadsheet(
+    ~~~~~~~~~~~~~~~~~^
+        src,
+        ^^^^
+    ...<13 lines>...
+        drop_empty_cols=drop_empty_cols,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/TP/lib/python3.13/site-packages/polars/io/spreadsheet/functions.py", line 680, in _read_spreadsheet
+    name: reader_fn(
+          ~~~~~~~~~^
+        parser=parser,
+        ^^^^^^^^^^^^^^
+    ...<7 lines>...
+        drop_empty_cols=drop_empty_cols,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/TP/lib/python3.13/site-packages/polars/io/spreadsheet/functions.py", line 1067, in _read_spreadsheet_calamine
+    df = _drop_null_data(
+        df,
+    ...<2 lines>...
+        drop_empty_cols=drop_empty_cols,
+    )
+  File "/Users/TP/lib/python3.13/site-packages/polars/io/spreadsheet/functions.py", line 965, in _drop_null_data
+    return _empty_frame(raise_if_empty)
+  File "/Users/TP/lib/python3.13/site-packages/polars/io/spreadsheet/functions.py", line 977, in _empty_frame
+    raise NoDataError(msg)
+polars.exceptions.NoDataError: empty Excel sheet
+
+If you want to read this as an empty DataFrame, set `raise_if_empty=False`.
+>>> # Read a different sheet
+>>> pl.read_excel("data/complicated.xlsx", sheet_id=2)
+shape: (1_000, 9)
+┌───────────┬───────────┬───────────┬─────────┬───┬───────┬───────────┬──────────┬──────────┐
+│ invoice   ┆ company   ┆ purchase_ ┆ product ┆ … ┆ price ┆ extended  ┆ Average  ┆ 22.816   │
+│ ---       ┆ ---       ┆ date      ┆ ---     ┆   ┆ ---   ┆ amount    ┆ Price    ┆ ---      │
+│ str       ┆ str       ┆ ---       ┆ str     ┆   ┆ i64   ┆ ---       ┆ ---      ┆ f64      │
+│           ┆           ┆ date      ┆         ┆   ┆       ┆ i64       ┆ str      ┆          │
+╞═══════════╪═══════════╪═══════════╪═════════╪═══╪═══════╪═══════════╪══════════╪══════════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-0 ┆ shirt   ┆ … ┆ 17    ┆ 323       ┆ Standard ┆ 7.533269 │
+│           ┆           ┆ 5         ┆         ┆   ┆       ┆           ┆ Deviatio ┆          │
+│           ┆           ┆           ┆         ┆   ┆       ┆           ┆ n        ┆          │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-0 ┆ book    ┆ … ┆ 14    ┆ 420       ┆ null     ┆ null     │
+│           ┆           ┆ 9         ┆         ┆   ┆       ┆           ┆          ┆          │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-1 ┆ poster  ┆ … ┆ 23    ┆ 161       ┆ Total    ┆ null     │
+│           ┆           ┆ 2         ┆         ┆   ┆       ┆           ┆ Qty Sold ┆          │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-1 ┆ pen     ┆ … ┆ 29    ┆ 203       ┆ shirt    ┆ 6249.0   │
+│           ┆           ┆ 8         ┆         ┆   ┆       ┆           ┆          ┆          │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-1 ┆ poster  ┆ … ┆ 19    ┆ 684       ┆ book     ┆ 5340.0   │
+│           ┆           ┆ 8         ┆         ┆   ┆       ┆           ┆          ┆          │
+│ …         ┆ …         ┆ …         ┆ …       ┆ … ┆ …     ┆ …         ┆ …        ┆ …        │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-1 ┆ pen     ┆ … ┆ 34    ┆ -170      ┆ null     ┆ null     │
+│           ┆           ┆ 1         ┆         ┆   ┆       ┆           ┆          ┆          │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-0 ┆ pen     ┆ … ┆ 32    ┆ 544       ┆ null     ┆ null     │
+│           ┆           ┆ 5         ┆         ┆   ┆       ┆           ┆          ┆          │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-2 ┆ poster  ┆ … ┆ 34    ┆ 578       ┆ null     ┆ null     │
+│           ┆           ┆ 4         ┆         ┆   ┆       ┆           ┆          ┆          │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-3 ┆ shirt   ┆ … ┆ 18    ┆ 270       ┆ null     ┆ null     │
+│           ┆           ┆ 0         ┆         ┆   ┆       ┆           ┆          ┆          │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-1 ┆ shirt   ┆ … ┆ 34    ┆ 816       ┆ null     ┆ null     │
+│           ┆           ┆ 2         ┆         ┆   ┆       ┆           ┆          ┆          │
+└───────────┴───────────┴───────────┴─────────┴───┴───────┴───────────┴──────────┴──────────┘
+>>> pl.read_excel("data/complicated.xlsx", sheet_name="sales data", columns="A:G")
+shape: (1_000, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬─────────────────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ extended amount │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---             │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64             │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═════════════════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323             │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420             │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161             │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203             │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684             │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …               │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170            │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544             │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578             │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270             │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816             │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴─────────────────┘
+>>> pl.read_excel("data/complicated.xlsx", sheet_name="levels")
+shape: (353, 8)
+┌───────────┬───────────┬───────────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ Compiled  ┆ __UNNAMED ┆ __UNNAMED ┆ __UNNAMED ┆ __UNNAME ┆ __UNNAME ┆ __UNNAME ┆ __UNNAME │
+│ by hand   ┆ __1       ┆ __2       ┆ __3       ┆ D__4     ┆ D__5     ┆ D__6     ┆ D__7     │
+│ ---       ┆ ---       ┆ ---       ┆ ---       ┆ ---      ┆ ---      ┆ ---      ┆ ---      │
+│ str       ┆ str       ┆ str       ┆ str       ┆ str      ┆ str      ┆ str      ┆ str      │
+╞═══════════╪═══════════╪═══════════╪═══════════╪══════════╪══════════╪══════════╪══════════╡
+│ null      ┆ null      ┆ New       ┆ null      ┆ null     ┆ null     ┆ null     ┆ null     │
+│           ┆           ┆ Levels    ┆           ┆          ┆          ┆          ┆          │
+│           ┆           ┆ from the  ┆           ┆          ┆          ┆          ┆          │
+│           ┆           ┆ CMO       ┆           ┆          ┆          ┆          ┆          │
+│ Company   ┆ Notes     ┆ level     ┆ ZipCode   ┆ update_m ┆ update_d ┆ update_y ┆ pct_to_t │
+│ Name      ┆           ┆           ┆           ┆ onth     ┆ ay       ┆ ear      ┆ arget    │
+│ Abatz     ┆ Not Sure  ┆ diamond   ┆ 14150     ┆ 3        ┆ 1        ┆ 2019     ┆ 100%     │
+│           ┆ about     ┆           ┆           ┆          ┆          ┆          ┆          │
+│           ┆ this one  ┆           ┆           ┆          ┆          ┆          ┆          │
+│ Agivu     ┆ null      ┆ silver    ┆ 61354     ┆ 3        ┆ 1        ┆ 2019     ┆ 90%      │
+│ Aibox     ┆ null      ┆ platinum  ┆ 04442     ┆ 3        ┆ 1        ┆ 2019     ┆ 105%     │
+│ …         ┆ …         ┆ …         ┆ …         ┆ …        ┆ …        ┆ …        ┆ …        │
+│ Zoonoodle ┆ null      ┆ silver    ┆ 21218     ┆ 3        ┆ 1        ┆ 2019     ┆ 105%     │
+│ Zooveo    ┆ null      ┆ silver    ┆ 84518     ┆ 3        ┆ 1        ┆ 2019     ┆ 60%      │
+│ Zoovu     ┆ null      ┆ platinum  ┆ 23307     ┆ 3        ┆ 1        ┆ 2019     ┆ 100%     │
+│ Zooxo     ┆ null      ┆ platinum  ┆ 99645     ┆ 3        ┆ 1        ┆ 2019     ┆ 80%      │
+│ Zoozzy    ┆ null      ┆ gold      ┆ 00012     ┆ 3        ┆ 1        ┆ 2019     ┆ 105%     │
+└───────────┴───────────┴───────────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+>>> pl.read_excel("data/complicated.xlsx", sheet_name="levels", read_options={"header\
+_row":2})
+shape: (351, 8)
+┌───────────┬───────────┬──────────┬─────────┬───────────┬───────────┬───────────┬──────────┐
+│ Company   ┆ Notes     ┆ level    ┆ ZipCode ┆ update_mo ┆ update_da ┆ update_ye ┆ pct_to_t │
+│ Name      ┆ ---       ┆ ---      ┆ ---     ┆ nth       ┆ y         ┆ ar        ┆ arget    │
+│ ---       ┆ str       ┆ str      ┆ str     ┆ ---       ┆ ---       ┆ ---       ┆ ---      │
+│ str       ┆           ┆          ┆         ┆ i64       ┆ i64       ┆ i64       ┆ str      │
+╞═══════════╪═══════════╪══════════╪═════════╪═══════════╪═══════════╪═══════════╪══════════╡
+│ Abatz     ┆ Not Sure  ┆ diamond  ┆ 14150   ┆ 3         ┆ 1         ┆ 2019      ┆ 100%     │
+│           ┆ about     ┆          ┆         ┆           ┆           ┆           ┆          │
+│           ┆ this one  ┆          ┆         ┆           ┆           ┆           ┆          │
+│ Agivu     ┆ null      ┆ silver   ┆ 61354   ┆ 3         ┆ 1         ┆ 2019      ┆ 90%      │
+│ Aibox     ┆ null      ┆ platinum ┆ 04442   ┆ 3         ┆ 1         ┆ 2019      ┆ 105%     │
+│ Ailane    ┆ null      ┆ silver   ┆ 78595   ┆ 3         ┆ 1         ┆ 2019      ┆ 60%      │
+│ Aimbo     ┆ null      ┆ diamond  ┆ 55447   ┆ 3         ┆ 1         ┆ 2019      ┆ 100%     │
+│ …         ┆ …         ┆ …        ┆ …       ┆ …         ┆ …         ┆ …         ┆ …        │
+│ Zoonoodle ┆ null      ┆ silver   ┆ 21218   ┆ 3         ┆ 1         ┆ 2019      ┆ 105%     │
+│ Zooveo    ┆ null      ┆ silver   ┆ 84518   ┆ 3         ┆ 1         ┆ 2019      ┆ 60%      │
+│ Zoovu     ┆ null      ┆ platinum ┆ 23307   ┆ 3         ┆ 1         ┆ 2019      ┆ 100%     │
+│ Zooxo     ┆ null      ┆ platinum ┆ 99645   ┆ 3         ┆ 1         ┆ 2019      ┆ 80%      │
+│ Zoozzy    ┆ null      ┆ gold     ┆ 00012   ┆ 3         ┆ 1         ┆ 2019      ┆ 105%     │
+└───────────┴───────────┴──────────┴─────────┴───────────┴───────────┴───────────┴──────────┘
+>>> pl.read_excel("data/complicated.xlsx", sheet_name="levels", read_options={"header\
+_row":2}, columns="A,C:H")
+shape: (351, 7)
+┌──────────────┬──────────┬─────────┬──────────────┬────────────┬─────────────┬─────────────┐
+│ Company Name ┆ level    ┆ ZipCode ┆ update_month ┆ update_day ┆ update_year ┆ pct_to_targ │
+│ ---          ┆ ---      ┆ ---     ┆ ---          ┆ ---        ┆ ---         ┆ et          │
+│ str          ┆ str      ┆ str     ┆ i64          ┆ i64        ┆ i64         ┆ ---         │
+│              ┆          ┆         ┆              ┆            ┆             ┆ str         │
+╞══════════════╪══════════╪═════════╪══════════════╪════════════╪═════════════╪═════════════╡
+│ Abatz        ┆ diamond  ┆ 14150   ┆ 3            ┆ 1          ┆ 2019        ┆ 100%        │
+│ Agivu        ┆ silver   ┆ 61354   ┆ 3            ┆ 1          ┆ 2019        ┆ 90%         │
+│ Aibox        ┆ platinum ┆ 04442   ┆ 3            ┆ 1          ┆ 2019        ┆ 105%        │
+│ Ailane       ┆ silver   ┆ 78595   ┆ 3            ┆ 1          ┆ 2019        ┆ 60%         │
+│ Aimbo        ┆ diamond  ┆ 55447   ┆ 3            ┆ 1          ┆ 2019        ┆ 100%        │
+│ …            ┆ …        ┆ …       ┆ …            ┆ …          ┆ …           ┆ …           │
+│ Zoonoodle    ┆ silver   ┆ 21218   ┆ 3            ┆ 1          ┆ 2019        ┆ 105%        │
+│ Zooveo       ┆ silver   ┆ 84518   ┆ 3            ┆ 1          ┆ 2019        ┆ 60%         │
+│ Zoovu        ┆ platinum ┆ 23307   ┆ 3            ┆ 1          ┆ 2019        ┆ 100%        │
+│ Zooxo        ┆ platinum ┆ 99645   ┆ 3            ┆ 1          ┆ 2019        ┆ 80%         │
+│ Zoozzy       ┆ gold     ┆ 00012   ┆ 3            ┆ 1          ┆ 2019        ┆ 105%        │
+└──────────────┴──────────┴─────────┴──────────────┴────────────┴─────────────┴─────────────┘
+>>> messy.select(pl.col("pct_to_target").str.replace_all(pattern="%", value="", literal=True))
+shape: (351, 1)
+┌───────────────┐
+│ pct_to_target │
+│ ---           │
+│ str           │
+╞═══════════════╡
+│ 100           │
+│ 90            │
+│ 105           │
+│ 60            │
+│ 100           │
+│ …             │
+│ 105           │
+│ 60            │
+│ 100           │
+│ 80            │
+│ 105           │
+└───────────────┘
+>>> messy.select(pl.col("pct_to_target").str.replace_all(pattern="%", value="", literal=True).cast(pl.Int8) / 100)
+shape: (351, 1)
+┌───────────────┐
+│ pct_to_target │
+│ ---           │
+│ f64           │
+╞═══════════════╡
+│ 1.0           │
+│ 0.9           │
+│ 1.05          │
+│ 0.6           │
+│ 1.0           │
+│ …             │
+│ 1.05          │
+│ 0.6           │
+│ 1.0           │
+│ 0.8           │
+│ 1.05          │
+└───────────────┘
+>>> messy.select(pl.date("update_year", "update_month", "update_day"))
+shape: (351, 1)
+┌────────────┐
+│ date       │
+│ ---        │
+│ date       │
+╞════════════╡
+│ 2019-03-01 │
+│ 2019-03-01 │
+│ 2019-03-01 │
+│ 2019-03-01 │
+│ 2019-03-01 │
+│ …          │
+│ 2019-03-01 │
+│ 2019-03-01 │
+│ 2019-03-01 │
+│ 2019-03-01 │
+│ 2019-03-01 │
+└────────────┘
+>>> data = {
+...     "company": ["Abatz", "Aibox"],
+...     "zip": [14150, 4442],
+... }
+>>>
+>>> zips = pl.DataFrame(data)
+>>> zips
+shape: (2, 2)
+┌─────────┬───────┐
+│ company ┆ zip   │
+│ ---     ┆ ---   │
+│ str     ┆ i64   │
+╞═════════╪═══════╡
+│ Abatz   ┆ 14150 │
+│ Aibox   ┆ 4442  │
+└─────────┴───────┘
+>>> zips.select(pl.col("zip").cast(pl.String).str.pad_start(5, "0"))
+shape: (2, 1)
+┌───────┐
+│ zip   │
+│ ---   │
+│ str   │
+╞═══════╡
+│ 14150 │
+│ 04442 │
+└───────┘

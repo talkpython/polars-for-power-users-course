@@ -1,0 +1,107 @@
+>>> import polars as pl
+>>> sales = pl.read_csv("data/sales.csv")
+>>> sales
+shape: (1_000, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ str           ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.count()
+shape: (1, 7)
+┌─────────┬─────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---     ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ u32     ┆ u32     ┆ u32           ┆ u32     ┆ u32      ┆ u32   ┆ u32   │
+╞═════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ 1000    ┆ 1000    ┆ 1000          ┆ 1000    ┆ 1000     ┆ 1000  ┆ 1000  │
+└─────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.filter(pl.col("purchase_data").dt.month()==3)
+Traceback (most recent call last):
+  File "<python-input-5>", line 1, in <module>
+    sales.filter(pl.col("purchase_data").dt.month()==3)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/TP/lib/python3.13/site-packages/polars/dataframe/frame.py", line 5101, in filter
+    return self.lazy().filter(*predicates, **constraints).collect(_eager=True)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/TP/lib/python3.13/site-packages/polars/lazyframe/frame.py", line 2065, in collect
+    return wrap_df(ldf.collect(callback))
+                   ~~~~~~~~~~~^^^^^^^^^^
+polars.exceptions.ColumnNotFoundError: unable to find column "purchase_data"; valid columns: ["invoice", "company", "purchase_date", "product", "quantity", "price", "total"]
+
+Resolved plan until failure:
+
+	---> FAILED HERE RESOLVING 'filter' <---
+DF ["invoice", "company", "purchase_date", "product", ...]; PROJECT */7 COLUMNS
+>>> sales.schema
+Schema({'invoice': String, 'company': String, 'purchase_date': String, 'product': String, 'quantity': Int64, 'price': Int64, 'total': Int64})
+>>> sales.filter(pl.col("purchase_date").cast(pl.Date).dt.month()==3)
+shape: (74, 7)
+┌───────────┬───────────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company       ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---           ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str           ┆ str           ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube      ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ VD-518-20 ┆ Dabshots      ┆ 2019-03-12    ┆ shirt   ┆ 19       ┆ 28    ┆ 532   │
+│ KI-908-67 ┆ Zoonoodle     ┆ 2019-03-10    ┆ pen     ┆ 23       ┆ 28    ┆ 644   │
+│ DG-182-79 ┆ Youbridge     ┆ 2019-03-10    ┆ poster  ┆ 7        ┆ 25    ┆ 175   │
+│ KS-847-13 ┆ Thoughtsphere ┆ 2019-03-12    ┆ pen     ┆ 41       ┆ 10    ┆ 410   │
+│ …         ┆ …             ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ UZ-411-71 ┆ Zoovu         ┆ 2019-03-29    ┆ book    ┆ 15       ┆ 11    ┆ 165   │
+│ HN-685-51 ┆ Dabfeed       ┆ 2019-03-25    ┆ poster  ┆ 0        ┆ 13    ┆ 0     │
+│ XO-354-67 ┆ Avamba        ┆ 2019-03-02    ┆ poster  ┆ 22       ┆ 27    ┆ 594   │
+│ IP-305-32 ┆ Skyndu        ┆ 2019-03-18    ┆ poster  ┆ 20       ┆ 18    ┆ 360   │
+│ RA-147-40 ┆ Dabfeed       ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+└───────────┴───────────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.select(pl.col("purchase_date").cast(pl.Date).dt.month()==3)
+shape: (1_000, 1)
+┌───────────────┐
+│ purchase_date │
+│ ---           │
+│ bool          │
+╞═══════════════╡
+│ true          │
+│ false         │
+│ false         │
+│ false         │
+│ false         │
+│ …             │
+│ false         │
+│ false         │
+│ true          │
+│ false         │
+│ false         │
+└───────────────┘
+>>> sales = pl.read_csv("data/sales.csv", try_parse_dates=True)
+>>> sales
+shape: (1_000, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘

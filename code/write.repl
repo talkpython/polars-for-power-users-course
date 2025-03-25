@@ -1,0 +1,29 @@
+>>> import polars as pl
+>>> sales = pl.read_excel("data/sales.xlsx")
+>>> viva = sales.filter(pl.col("company") == "Viva")
+>>> viva
+shape: (5, 7)
+┌───────────┬─────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str     ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ CM-205-86 ┆ Viva    ┆ 2019-05-19    ┆ book    ┆ 8        ┆ 14    ┆ 112   │
+│ QU-986-45 ┆ Viva    ┆ 2019-06-09    ┆ book    ┆ 6        ┆ 35    ┆ 210   │
+│ RF-796-61 ┆ Viva    ┆ 2019-02-19    ┆ poster  ┆ 46       ┆ 16    ┆ 736   │
+│ ZM-628-88 ┆ Viva    ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva    ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+└───────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> viva.write_excel()
+<xlsxwriter.workbook.Workbook object at 0x107f0ecf0>
+>>> with Workbook("processed/viva.xlsx") as wb:
+...     viva.write_excel(
+...         workbook=wb,
+...         worksheet="sales",
+...         column_totals=True,
+...         autofit=True,
+...         dtype_formats={pl.Date: "mm/dd/yyyy"},
+...         header_format={"bold":True, "font_color":"#702963"},
+...     )
+...
+<xlsxwriter.workbook.Workbook object at 0x107fafc50>

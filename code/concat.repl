@@ -1,0 +1,93 @@
+>>> import polars as pl
+>>> sales = pl.read_excel("data/sales.xlsx")
+>>> sales
+shape: (1_000, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> extra = pl.read_excel("data/extra50.xlsx")
+>>> extra
+shape: (50, 7)
+┌────────────┬─────────────┬───────────────┬─────────┬──────────┬───────┬────────┐
+│ invoice    ┆ company     ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ amount │
+│ ---        ┆ ---         ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---    │
+│ str        ┆ str         ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64    │
+╞════════════╪═════════════╪═══════════════╪═════════╪══════════╪═══════╪════════╡
+│ ZN-870-293 ┆ Linkbuzz    ┆ 2019-01-28    ┆ shirt   ┆ 28       ┆ 17    ┆ 476    │
+│ JQ-501-633 ┆ Aimbu       ┆ 2019-10-04    ┆ book    ┆ 21       ┆ 14    ┆ 294    │
+│ FI-165-583 ┆ Dablist     ┆ 2019-05-05    ┆ poster  ┆ 4        ┆ 23    ┆ 92     │
+│ XP-005-553 ┆ Rhycero     ┆ 2019-11-03    ┆ pen     ┆ 49       ┆ 29    ┆ 1421   │
+│ NB-917-183 ┆ Skinder     ┆ 2019-07-17    ┆ poster  ┆ 18       ┆ 19    ┆ 342    │
+│ …          ┆ …           ┆ …             ┆ …       ┆ …        ┆ …     ┆ …      │
+│ PS-680-563 ┆ Quimm       ┆ 2019-09-19    ┆ poster  ┆ 0        ┆ 35    ┆ 0      │
+│ MU-441-943 ┆ Podcat      ┆ 2019-09-15    ┆ shirt   ┆ 7        ┆ 15    ┆ 105    │
+│ RR-924-583 ┆ Oyoloo      ┆ 2019-12-24    ┆ book    ┆ 17       ┆ 10    ┆ 170    │
+│ NM-907-403 ┆ Thoughtbeat ┆ 2019-08-02    ┆ poster  ┆ 8        ┆ 26    ┆ 208    │
+│ CC-124-201 ┆ Thoughtblab ┆ 2019-06-30    ┆ poster  ┆ 23       ┆ 5     ┆ 115    │
+└────────────┴─────────────┴───────────────┴─────────┴──────────┴───────┴────────┘
+>>> sales = pl.concat([sales, extra])
+Traceback (most recent call last):
+  File "<python-input-16>", line 1, in <module>
+    sales = pl.concat([sales, extra])
+  File "/Users/TP/lib/python3.13/site-packages/polars/functions/eager.py", line 229, in concat
+    out = wrap_df(plr.concat_df(elems))
+                  ~~~~~~~~~~~~~^^^^^^^
+polars.exceptions.ShapeError: unable to vstack, column names do not match: "total" and "amount"
+>>> sales.schema
+Schema({'invoice': String, 'company': String, 'purchase_date': Date, 'product': String, 'quantity': Int64, 'price': Int64, 'total': Int64})
+>>> extra.schema
+Schema({'invoice': String, 'company': String, 'purchase_date': Date, 'product': String, 'quantity': Int64, 'price': Int64, 'amount': Int64})
+>>> extra.rename({"amount":"total"})
+shape: (50, 7)
+┌────────────┬─────────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice    ┆ company     ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---        ┆ ---         ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str        ┆ str         ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞════════════╪═════════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-293 ┆ Linkbuzz    ┆ 2019-01-28    ┆ shirt   ┆ 28       ┆ 17    ┆ 476   │
+│ JQ-501-633 ┆ Aimbu       ┆ 2019-10-04    ┆ book    ┆ 21       ┆ 14    ┆ 294   │
+│ FI-165-583 ┆ Dablist     ┆ 2019-05-05    ┆ poster  ┆ 4        ┆ 23    ┆ 92    │
+│ XP-005-553 ┆ Rhycero     ┆ 2019-11-03    ┆ pen     ┆ 49       ┆ 29    ┆ 1421  │
+│ NB-917-183 ┆ Skinder     ┆ 2019-07-17    ┆ poster  ┆ 18       ┆ 19    ┆ 342   │
+│ …          ┆ …           ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ PS-680-563 ┆ Quimm       ┆ 2019-09-19    ┆ poster  ┆ 0        ┆ 35    ┆ 0     │
+│ MU-441-943 ┆ Podcat      ┆ 2019-09-15    ┆ shirt   ┆ 7        ┆ 15    ┆ 105   │
+│ RR-924-583 ┆ Oyoloo      ┆ 2019-12-24    ┆ book    ┆ 17       ┆ 10    ┆ 170   │
+│ NM-907-403 ┆ Thoughtbeat ┆ 2019-08-02    ┆ poster  ┆ 8        ┆ 26    ┆ 208   │
+│ CC-124-201 ┆ Thoughtblab ┆ 2019-06-30    ┆ poster  ┆ 23       ┆ 5     ┆ 115   │
+└────────────┴─────────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> extra = extra.rename({"amount":"total"})
+>>> sales = pl.concat([sales, extra])
+>>> sales
+shape: (1_050, 7)
+┌────────────┬─────────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice    ┆ company     ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---        ┆ ---         ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str        ┆ str         ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞════════════╪═════════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29  ┆ Realcube    ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63  ┆ Zooxo       ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ FI-165-58  ┆ Dabtype     ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   │
+│ XP-005-55  ┆ Skipfire    ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   │
+│ NB-917-18  ┆ Bluezoom    ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ …          ┆ …           ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ PS-680-563 ┆ Quimm       ┆ 2019-09-19    ┆ poster  ┆ 0        ┆ 35    ┆ 0     │
+│ MU-441-943 ┆ Podcat      ┆ 2019-09-15    ┆ shirt   ┆ 7        ┆ 15    ┆ 105   │
+│ RR-924-583 ┆ Oyoloo      ┆ 2019-12-24    ┆ book    ┆ 17       ┆ 10    ┆ 170   │
+│ NM-907-403 ┆ Thoughtbeat ┆ 2019-08-02    ┆ poster  ┆ 8        ┆ 26    ┆ 208   │
+│ CC-124-201 ┆ Thoughtblab ┆ 2019-06-30    ┆ poster  ┆ 23       ┆ 5     ┆ 115   │
+└────────────┴─────────────┴───────────────┴─────────┴──────────┴───────┴───────┘

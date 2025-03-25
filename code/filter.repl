@@ -1,0 +1,328 @@
+>>> import polars as pl
+>>> sales = pl.read_excel("data/sales.xlsx")
+>>> sales
+shape: (1_000, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.filter(pl.col("quantity") >= 10)
+shape: (739, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ MQ-907-02 ┆ Babbleset ┆ 2019-10-27    ┆ poster  ┆ 30       ┆ 21    ┆ 630   │
+│ NX-102-26 ┆ Fliptune  ┆ 2019-10-16    ┆ book    ┆ 40       ┆ 28    ┆ 1120  │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ON-247-90 ┆ Photobug  ┆ 2019-09-29    ┆ shirt   ┆ 40       ┆ 31    ┆ 1240  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.filter(
+...     pl.col("company") == "Viva",
+...     pl.col("quantity") >= 10
+... )
+shape: (2, 7)
+┌───────────┬─────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str     ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ RF-796-61 ┆ Viva    ┆ 2019-02-19    ┆ poster  ┆ 46       ┆ 16    ┆ 736   │
+│ DQ-810-46 ┆ Viva    ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+└───────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> # What's a filter?
+>>> sales.select(pl.col("company") == "Viva")
+shape: (1_000, 1)
+┌─────────┐
+│ company │
+│ ---     │
+│ bool    │
+╞═════════╡
+│ false   │
+│ false   │
+│ false   │
+│ false   │
+│ false   │
+│ …       │
+│ true    │
+│ true    │
+│ false   │
+│ false   │
+│ false   │
+└─────────┘
+>>> viva = sales.select(pl.col("company") == "Viva")
+>>> sales.filter(viva)
+Traceback (most recent call last):
+  File "<python-input-7>", line 1, in <module>
+    sales.filter(viva)
+    ~~~~~~~~~~~~^^^^^^
+  File "/Users/TP/lib/python3.13/site-packages/polars/dataframe/frame.py", line 5101, in filter
+    return self.lazy().filter(*predicates, **constraints).collect(_eager=True)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/TP/lib/python3.13/site-packages/polars/lazyframe/frame.py", line 3598, in filter
+    return self._filter(
+           ~~~~~~~~~~~~^
+        predicates=predicates,
+        ^^^^^^^^^^^^^^^^^^^^^^
+        constraints=constraints,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+        invert=False,
+        ^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/TP/lib/python3.13/site-packages/polars/lazyframe/frame.py", line 3386, in _filter
+    raise TypeError(msg)
+TypeError: invalid predicate for `filter`: shape: (1_000, 1)
+┌─────────┐
+│ company │
+│ ---     │
+│ bool    │
+╞═════════╡
+│ false   │
+│ false   │
+│ false   │
+│ false   │
+│ false   │
+│ …       │
+│ true    │
+│ true    │
+│ false   │
+│ false   │
+│ false   │
+└─────────┘
+>>> viva = sales.select(pl.col("company") == "Viva").to_series()
+>>> viva
+shape: (1_000,)
+Series: 'company' [bool]
+[
+	false
+	false
+	false
+	false
+	false
+	…
+	true
+	true
+	false
+	false
+	false
+]
+>>> sales.filter(viva)
+shape: (5, 7)
+┌───────────┬─────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str     ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ CM-205-86 ┆ Viva    ┆ 2019-05-19    ┆ book    ┆ 8        ┆ 14    ┆ 112   │
+│ QU-986-45 ┆ Viva    ┆ 2019-06-09    ┆ book    ┆ 6        ┆ 35    ┆ 210   │
+│ RF-796-61 ┆ Viva    ┆ 2019-02-19    ┆ poster  ┆ 46       ┆ 16    ┆ 736   │
+│ ZM-628-88 ┆ Viva    ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva    ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+└───────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> qty_10 = sales.select(pl.col("quantity") >= 10).to_series()
+>>> qty_10
+shape: (1_000,)
+Series: 'quantity' [bool]
+[
+	true
+	true
+	false
+	false
+	true
+	…
+	false
+	true
+	true
+	true
+	true
+]
+>>> sales.filter(viva, qty_10)
+shape: (2, 7)
+┌───────────┬─────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str     ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ RF-796-61 ┆ Viva    ┆ 2019-02-19    ┆ poster  ┆ 46       ┆ 16    ┆ 736   │
+│ DQ-810-46 ┆ Viva    ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+└───────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.filter((viva & qty_10))
+shape: (2, 7)
+┌───────────┬─────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str     ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ RF-796-61 ┆ Viva    ┆ 2019-02-19    ┆ poster  ┆ 46       ┆ 16    ┆ 736   │
+│ DQ-810-46 ┆ Viva    ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+└───────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.filter((viva | qty_10))
+shape: (742, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ MQ-907-02 ┆ Babbleset ┆ 2019-10-27    ┆ poster  ┆ 30       ┆ 21    ┆ 630   │
+│ NX-102-26 ┆ Fliptune  ┆ 2019-10-16    ┆ book    ┆ 40       ┆ 28    ┆ 1120  │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> # Chaining
+>>> sales.filter(pl.col("invoice").str.starts_with("S"))
+shape: (33, 7)
+┌───────────┬────────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company    ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---        ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str        ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪════════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ SI-328-34 ┆ Babbleblab ┆ 2019-12-13    ┆ shirt   ┆ 3        ┆ 34    ┆ 102   │
+│ SN-985-89 ┆ Babbleset  ┆ 2019-04-16    ┆ book    ┆ 46       ┆ 22    ┆ 1012  │
+│ SZ-915-85 ┆ Skyvu      ┆ 2019-07-02    ┆ pen     ┆ 4        ┆ 23    ┆ 92    │
+│ SL-291-57 ┆ Realblab   ┆ 2019-10-13    ┆ pen     ┆ 40       ┆ 18    ┆ 720   │
+│ SZ-476-27 ┆ Eidel      ┆ 2019-08-23    ┆ book    ┆ 22       ┆ 21    ┆ 462   │
+│ …         ┆ …          ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ SN-550-59 ┆ Kimia      ┆ 2019-10-19    ┆ shirt   ┆ 19       ┆ 12    ┆ 228   │
+│ SU-521-20 ┆ Skyndu     ┆ 2019-06-14    ┆ book    ┆ 28       ┆ 11    ┆ 308   │
+│ SF-047-26 ┆ Kazu       ┆ 2019-05-28    ┆ shirt   ┆ 10       ┆ 14    ┆ 140   │
+│ SK-097-23 ┆ Tazzy      ┆ 2019-07-27    ┆ shirt   ┆ 24       ┆ 18    ┆ 432   │
+│ SS-003-62 ┆ Quire      ┆ 2019-09-25    ┆ poster  ┆ 39       ┆ 35    ┆ 1365  │
+└───────────┴────────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> with_s = sales.filter(pl.col("invoice").str.starts_with("S"))
+>>> with_s.select(pl.col("product").value_counts())
+shape: (4, 1)
+┌──────────────┐
+│ product      │
+│ ---          │
+│ struct[2]    │
+╞══════════════╡
+│ {"shirt",10} │
+│ {"pen",10}   │
+│ {"poster",7} │
+│ {"book",6}   │
+└──────────────┘
+>>> sales.filter(pl.col("invoice").str.starts_with("S")).select(pl.col("product").value_counts()).unnest("product")
+shape: (4, 2)
+┌─────────┬───────┐
+│ product ┆ count │
+│ ---     ┆ ---   │
+│ str     ┆ u32   │
+╞═════════╪═══════╡
+│ pen     ┆ 10    │
+│ book    ┆ 6     │
+│ poster  ┆ 7     │
+│ shirt   ┆ 10    │
+└─────────┴───────┘
+>>> # Filtering on dates
+>>> from datetime import date
+>>> sales.filter(pl.col("purchase_date") >= date(2019, 12, 1))
+shape: (86, 7)
+┌───────────┬────────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company    ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---        ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str        ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪════════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ MX-599-18 ┆ Vimbo      ┆ 2019-12-12    ┆ book    ┆ 36       ┆ 33    ┆ 1188  │
+│ NN-163-23 ┆ Skyble     ┆ 2019-12-27    ┆ pen     ┆ 45       ┆ 12    ┆ 540   │
+│ FP-453-25 ┆ Zava       ┆ 2019-12-05    ┆ poster  ┆ 0        ┆ 13    ┆ 0     │
+│ SI-328-34 ┆ Babbleblab ┆ 2019-12-13    ┆ shirt   ┆ 3        ┆ 34    ┆ 102   │
+│ JF-213-00 ┆ Centimia   ┆ 2019-12-22    ┆ pen     ┆ 6        ┆ 17    ┆ 102   │
+│ …         ┆ …          ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ HY-069-99 ┆ Oba        ┆ 2019-12-12    ┆ poster  ┆ 18       ┆ 25    ┆ 450   │
+│ WO-091-32 ┆ Eire       ┆ 2019-12-05    ┆ shirt   ┆ 15       ┆ 20    ┆ 300   │
+│ FO-483-27 ┆ Cogibox    ┆ 2019-12-10    ┆ poster  ┆ 25       ┆ 15    ┆ 375   │
+│ DX-716-83 ┆ Aimbo      ┆ 2019-12-17    ┆ pen     ┆ 38       ┆ 15    ┆ 570   │
+│ VT-754-54 ┆ Photobean  ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+└───────────┴────────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.filter(pl.col("purchase_date") >= pl.lit("2019-12-1").str.to_date())
+shape: (86, 7)
+┌───────────┬────────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company    ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---        ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str        ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪════════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ MX-599-18 ┆ Vimbo      ┆ 2019-12-12    ┆ book    ┆ 36       ┆ 33    ┆ 1188  │
+│ NN-163-23 ┆ Skyble     ┆ 2019-12-27    ┆ pen     ┆ 45       ┆ 12    ┆ 540   │
+│ FP-453-25 ┆ Zava       ┆ 2019-12-05    ┆ poster  ┆ 0        ┆ 13    ┆ 0     │
+│ SI-328-34 ┆ Babbleblab ┆ 2019-12-13    ┆ shirt   ┆ 3        ┆ 34    ┆ 102   │
+│ JF-213-00 ┆ Centimia   ┆ 2019-12-22    ┆ pen     ┆ 6        ┆ 17    ┆ 102   │
+│ …         ┆ …          ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ HY-069-99 ┆ Oba        ┆ 2019-12-12    ┆ poster  ┆ 18       ┆ 25    ┆ 450   │
+│ WO-091-32 ┆ Eire       ┆ 2019-12-05    ┆ shirt   ┆ 15       ┆ 20    ┆ 300   │
+│ FO-483-27 ┆ Cogibox    ┆ 2019-12-10    ┆ poster  ┆ 25       ┆ 15    ┆ 375   │
+│ DX-716-83 ┆ Aimbo      ┆ 2019-12-17    ┆ pen     ┆ 38       ┆ 15    ┆ 570   │
+│ VT-754-54 ┆ Photobean  ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+└───────────┴────────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.filter(
+...     pl.col("product") == "book",
+...     pl.col("purchase_date").is_between(date(2019, 11, 1), date(2019, 11, 30))
+... ).sort("purchase_date")
+shape: (23, 7)
+┌───────────┬──────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company  ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---      ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str      ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ CJ-981-24 ┆ Skyba    ┆ 2019-11-01    ┆ book    ┆ 28       ┆ 23    ┆ 644   │
+│ TL-625-84 ┆ Snaptags ┆ 2019-11-02    ┆ book    ┆ 28       ┆ 33    ┆ 924   │
+│ UK-253-68 ┆ Leenti   ┆ 2019-11-02    ┆ book    ┆ 18       ┆ 22    ┆ 396   │
+│ IK-877-78 ┆ Eayo     ┆ 2019-11-04    ┆ book    ┆ 19       ┆ 28    ┆ 532   │
+│ IO-056-62 ┆ Yambee   ┆ 2019-11-09    ┆ book    ┆ 42       ┆ 18    ┆ 756   │
+│ …         ┆ …        ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ EP-683-72 ┆ Npath    ┆ 2019-11-22    ┆ book    ┆ 1        ┆ 15    ┆ 15    │
+│ UE-108-04 ┆ Yodo     ┆ 2019-11-24    ┆ book    ┆ 29       ┆ 27    ┆ 783   │
+│ VY-434-82 ┆ Oyondu   ┆ 2019-11-24    ┆ book    ┆ 8        ┆ 27    ┆ 216   │
+│ HB-316-64 ┆ Vinder   ┆ 2019-11-25    ┆ book    ┆ 0        ┆ 25    ┆ 0     │
+│ ZC-675-39 ┆ Skinix   ┆ 2019-11-26    ┆ book    ┆ 22       ┆ 29    ┆ 638   │
+└───────────┴──────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.filter(
+...     pl.col("product") == "book",
+...     pl.col("purchase_date").dt.month() == 11
+... ).sort("purchase_date")
+shape: (23, 7)
+┌───────────┬──────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company  ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---      ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str      ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ CJ-981-24 ┆ Skyba    ┆ 2019-11-01    ┆ book    ┆ 28       ┆ 23    ┆ 644   │
+│ TL-625-84 ┆ Snaptags ┆ 2019-11-02    ┆ book    ┆ 28       ┆ 33    ┆ 924   │
+│ UK-253-68 ┆ Leenti   ┆ 2019-11-02    ┆ book    ┆ 18       ┆ 22    ┆ 396   │
+│ IK-877-78 ┆ Eayo     ┆ 2019-11-04    ┆ book    ┆ 19       ┆ 28    ┆ 532   │
+│ IO-056-62 ┆ Yambee   ┆ 2019-11-09    ┆ book    ┆ 42       ┆ 18    ┆ 756   │
+│ …         ┆ …        ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ EP-683-72 ┆ Npath    ┆ 2019-11-22    ┆ book    ┆ 1        ┆ 15    ┆ 15    │
+│ UE-108-04 ┆ Yodo     ┆ 2019-11-24    ┆ book    ┆ 29       ┆ 27    ┆ 783   │
+│ VY-434-82 ┆ Oyondu   ┆ 2019-11-24    ┆ book    ┆ 8        ┆ 27    ┆ 216   │
+│ HB-316-64 ┆ Vinder   ┆ 2019-11-25    ┆ book    ┆ 0        ┆ 25    ┆ 0     │
+│ ZC-675-39 ┆ Skinix   ┆ 2019-11-26    ┆ book    ┆ 22       ┆ 29    ┆ 638   │
+└───────────┴──────────┴───────────────┴─────────┴──────────┴───────┴───────┘

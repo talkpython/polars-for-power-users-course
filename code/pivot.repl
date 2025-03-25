@@ -1,0 +1,92 @@
+>>> import polars as pl
+>>> sales = pl.read_excel("data/sales.xlsx")
+>>> sales
+shape: (1_000, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.pivot("product", index="company", values="quantity", aggregate_function="sum")
+shape: (351, 5)
+┌──────────┬───────┬──────┬────────┬──────┐
+│ company  ┆ shirt ┆ book ┆ poster ┆ pen  │
+│ ---      ┆ ---   ┆ ---  ┆ ---    ┆ ---  │
+│ str      ┆ i64   ┆ i64  ┆ i64    ┆ i64  │
+╞══════════╪═══════╪══════╪════════╪══════╡
+│ Realcube ┆ 60    ┆ 33   ┆ 110    ┆ null │
+│ Zooxo    ┆ 85    ┆ 30   ┆ null   ┆ null │
+│ Dabtype  ┆ null  ┆ null ┆ 7      ┆ null │
+│ Skipfire ┆ 42    ┆ null ┆ 20     ┆ 7    │
+│ Bluezoom ┆ 38    ┆ 21   ┆ 36     ┆ 23   │
+│ …        ┆ …     ┆ …    ┆ …      ┆ …    │
+│ Voonder  ┆ 9     ┆ null ┆ null   ┆ null │
+│ Zoovu    ┆ -2    ┆ 15   ┆ null   ┆ null │
+│ Centizu  ┆ null  ┆ null ┆ null   ┆ 0    │
+│ Voonyx   ┆ null  ┆ 14   ┆ null   ┆ 38   │
+│ Omba     ┆ null  ┆ 9    ┆ null   ┆ null │
+└──────────┴───────┴──────┴────────┴──────┘
+>>> sales.pivot(
+...     "product",
+...     index="company",
+...     values="quantity",
+...     aggregate_function="sum",
+...     sort_columns=True
+... ).sort("company").fill_null(strategy="zero")
+shape: (351, 5)
+┌───────────┬──────┬─────┬────────┬───────┐
+│ company   ┆ book ┆ pen ┆ poster ┆ shirt │
+│ ---       ┆ ---  ┆ --- ┆ ---    ┆ ---   │
+│ str       ┆ i64  ┆ i64 ┆ i64    ┆ i64   │
+╞═══════════╪══════╪═════╪════════╪═══════╡
+│ Abatz     ┆ 64   ┆ 7   ┆ 39     ┆ 0     │
+│ Agivu     ┆ 11   ┆ 0   ┆ 0      ┆ 20    │
+│ Aibox     ┆ 2    ┆ 46  ┆ 0      ┆ 0     │
+│ Ailane    ┆ 25   ┆ -3  ┆ 0      ┆ 0     │
+│ Aimbo     ┆ 0    ┆ 34  ┆ 0      ┆ -5    │
+│ …         ┆ …    ┆ …   ┆ …      ┆ …     │
+│ Zoonoodle ┆ 17   ┆ 23  ┆ 0      ┆ 14    │
+│ Zooveo    ┆ 0    ┆ 12  ┆ 21     ┆ 13    │
+│ Zoovu     ┆ 15   ┆ 0   ┆ 0      ┆ -2    │
+│ Zooxo     ┆ 30   ┆ 0   ┆ 0      ┆ 85    │
+│ Zoozzy    ┆ 0    ┆ 31  ┆ 31     ┆ 23    │
+└───────────┴──────┴─────┴────────┴───────┘
+>>> sales.pivot(
+...     "product",
+...     index="company",
+...     values=["quantity", "total"],
+...     aggregate_function="sum",
+...     sort_columns=True
+... ).sort("company").fill_null(strategy="zero")
+shape: (351, 9)
+┌──────────┬──────────┬──────────┬──────────┬───┬──────────┬──────────┬──────────┬──────────┐
+│ company  ┆ quantity ┆ quantity ┆ quantity ┆ … ┆ total_bo ┆ total_pe ┆ total_po ┆ total_sh │
+│ ---      ┆ _book    ┆ _pen     ┆ _poster  ┆   ┆ ok       ┆ n        ┆ ster     ┆ irt      │
+│ str      ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---      ┆ ---      ┆ ---      ┆ ---      │
+│          ┆ i64      ┆ i64      ┆ i64      ┆   ┆ i64      ┆ i64      ┆ i64      ┆ i64      │
+╞══════════╪══════════╪══════════╪══════════╪═══╪══════════╪══════════╪══════════╪══════════╡
+│ Abatz    ┆ 64       ┆ 7        ┆ 39       ┆ … ┆ 2063     ┆ 140      ┆ 1248     ┆ 0        │
+│ Agivu    ┆ 11       ┆ 0        ┆ 0        ┆ … ┆ 385      ┆ 0        ┆ 0        ┆ 700      │
+│ Aibox    ┆ 2        ┆ 46       ┆ 0        ┆ … ┆ 30       ┆ 828      ┆ 0        ┆ 0        │
+│ Ailane   ┆ 25       ┆ -3       ┆ 0        ┆ … ┆ 400      ┆ -105     ┆ 0        ┆ 0        │
+│ Aimbo    ┆ 0        ┆ 34       ┆ 0        ┆ … ┆ 0        ┆ 438      ┆ 0        ┆ -165     │
+│ …        ┆ …        ┆ …        ┆ …        ┆ … ┆ …        ┆ …        ┆ …        ┆ …        │
+│ Zoonoodl ┆ 17       ┆ 23       ┆ 0        ┆ … ┆ 527      ┆ 644      ┆ 0        ┆ 308      │
+│ e        ┆          ┆          ┆          ┆   ┆          ┆          ┆          ┆          │
+│ Zooveo   ┆ 0        ┆ 12       ┆ 21       ┆ … ┆ 0        ┆ 113      ┆ 609      ┆ 377      │
+│ Zoovu    ┆ 15       ┆ 0        ┆ 0        ┆ … ┆ 165      ┆ 0        ┆ 0        ┆ -56      │
+│ Zooxo    ┆ 30       ┆ 0        ┆ 0        ┆ … ┆ 420      ┆ 0        ┆ 0        ┆ 1378     │
+│ Zoozzy   ┆ 0        ┆ 31       ┆ 31       ┆ … ┆ 0        ┆ 527      ┆ 620      ┆ 437      │
+└──────────┴──────────┴──────────┴──────────┴───┴──────────┴──────────┴──────────┴──────────┘

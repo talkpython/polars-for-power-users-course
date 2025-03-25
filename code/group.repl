@@ -1,0 +1,271 @@
+>>> import polars as pl
+>>> sales = pl.read_excel("data/sales.xlsx")
+>>> sales
+shape: (1_000, 7)
+┌───────────┬───────────┬───────────────┬─────────┬──────────┬───────┬───────┐
+│ invoice   ┆ company   ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total │
+│ ---       ┆ ---       ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---   │
+│ str       ┆ str       ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64   │
+╞═══════════╪═══════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
+│ ZN-870-29 ┆ Realcube  ┆ 2019-03-05    ┆ shirt   ┆ 19       ┆ 17    ┆ 323   │
+│ JQ-501-63 ┆ Zooxo     ┆ 2019-07-09    ┆ book    ┆ 30       ┆ 14    ┆ 420   │
+│ FI-165-58 ┆ Dabtype   ┆ 2019-08-12    ┆ poster  ┆ 7        ┆ 23    ┆ 161   │
+│ XP-005-55 ┆ Skipfire  ┆ 2019-11-18    ┆ pen     ┆ 7        ┆ 29    ┆ 203   │
+│ NB-917-18 ┆ Bluezoom  ┆ 2019-04-18    ┆ poster  ┆ 36       ┆ 19    ┆ 684   │
+│ …         ┆ …         ┆ …             ┆ …       ┆ …        ┆ …     ┆ …     │
+│ ZM-628-88 ┆ Viva      ┆ 2019-09-11    ┆ pen     ┆ -5       ┆ 34    ┆ -170  │
+│ DQ-810-46 ┆ Viva      ┆ 2019-09-05    ┆ pen     ┆ 17       ┆ 32    ┆ 544   │
+│ RA-147-40 ┆ Dabfeed   ┆ 2019-03-24    ┆ poster  ┆ 17       ┆ 34    ┆ 578   │
+│ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ 15       ┆ 18    ┆ 270   │
+│ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ 24       ┆ 34    ┆ 816   │
+└───────────┴───────────┴───────────────┴─────────┴──────────┴───────┴───────┘
+>>> sales.sum()
+shape: (1, 7)
+┌─────────┬─────────┬───────────────┬─────────┬──────────┬───────┬────────┐
+│ invoice ┆ company ┆ purchase_date ┆ product ┆ quantity ┆ price ┆ total  │
+│ ---     ┆ ---     ┆ ---           ┆ ---     ┆ ---      ┆ ---   ┆ ---    │
+│ str     ┆ str     ┆ date          ┆ str     ┆ i64      ┆ i64   ┆ i64    │
+╞═════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪════════╡
+│ null    ┆ null    ┆ null          ┆ null    ┆ 22421    ┆ 22816 ┆ 510270 │
+└─────────┴─────────┴───────────────┴─────────┴──────────┴───────┴────────┘
+>>> sales.mean()
+shape: (1, 7)
+┌─────────┬─────────┬─────────────────────────┬─────────┬──────────┬────────┬────────┐
+│ invoice ┆ company ┆ purchase_date           ┆ product ┆ quantity ┆ price  ┆ total  │
+│ ---     ┆ ---     ┆ ---                     ┆ ---     ┆ ---      ┆ ---    ┆ ---    │
+│ str     ┆ str     ┆ datetime[ms]            ┆ str     ┆ f64      ┆ f64    ┆ f64    │
+╞═════════╪═════════╪═════════════════════════╪═════════╪══════════╪════════╪════════╡
+│ null    ┆ null    ┆ 2019-07-04 17:41:16.800 ┆ null    ┆ 22.421   ┆ 22.816 ┆ 510.27 │
+└─────────┴─────────┴─────────────────────────┴─────────┴──────────┴────────┴────────┘
+>>> sales.select(
+...     pl.col("quantity").mean().alias("mean"),
+...     pl.col("quantity").std().alias("std")
+... )
+shape: (1, 2)
+┌────────┬───────────┐
+│ mean   ┆ std       │
+│ ---    ┆ ---       │
+│ f64    ┆ f64       │
+╞════════╪═══════════╡
+│ 22.421 ┆ 16.246714 │
+└────────┴───────────┘
+>>> sales.select(
+...     pl.col("quantity").mean(),
+...     pl.col("price").mean()
+... )
+shape: (1, 2)
+┌──────────┬────────┐
+│ quantity ┆ price  │
+│ ---      ┆ ---    │
+│ f64      ┆ f64    │
+╞══════════╪════════╡
+│ 22.421   ┆ 22.816 │
+└──────────┴────────┘
+>>> sales.select(["quantity", "price"]).mean()
+shape: (1, 2)
+┌──────────┬────────┐
+│ quantity ┆ price  │
+│ ---      ┆ ---    │
+│ f64      ┆ f64    │
+╞══════════╪════════╡
+│ 22.421   ┆ 22.816 │
+└──────────┴────────┘
+>>> # Group-by
+>>> sales.group_by("product").agg(pl.count())
+<python-input-17>:1: DeprecationWarning: `pl.count()` is deprecated. Please use `pl.len()` instead.
+  sales.group_by("product").agg(pl.count())
+shape: (4, 2)
+┌─────────┬───────┐
+│ product ┆ count │
+│ ---     ┆ ---   │
+│ str     ┆ u32   │
+╞═════════╪═══════╡
+│ book    ┆ 234   │
+│ poster  ┆ 269   │
+│ shirt   ┆ 271   │
+│ pen     ┆ 226   │
+└─────────┴───────┘
+>>> sales.group_by("product").agg(pl.len())
+shape: (4, 2)
+┌─────────┬─────┐
+│ product ┆ len │
+│ ---     ┆ --- │
+│ str     ┆ u32 │
+╞═════════╪═════╡
+│ book    ┆ 234 │
+│ pen     ┆ 226 │
+│ shirt   ┆ 271 │
+│ poster  ┆ 269 │
+└─────────┴─────┘
+>>> sales.group_by("product")
+<polars.dataframe.group_by.GroupBy object at 0x104ef1d10>
+>>> sales.group_by("product").agg(pl.len(), pl.col("quantity").sum())
+shape: (4, 3)
+┌─────────┬─────┬──────────┐
+│ product ┆ len ┆ quantity │
+│ ---     ┆ --- ┆ ---      │
+│ str     ┆ u32 ┆ i64      │
+╞═════════╪═════╪══════════╡
+│ poster  ┆ 269 ┆ 5827     │
+│ book    ┆ 234 ┆ 5340     │
+│ shirt   ┆ 271 ┆ 6249     │
+│ pen     ┆ 226 ┆ 5005     │
+└─────────┴─────┴──────────┘
+>>> sales.filter(pl.col("company") == "Viva").group_by("product").agg(
+...     pl.len(),
+...     pl.col("quantity").alias("qty_sum").sum(),
+...     pl.col("quantity").alias("qty_mean").mean()
+... )
+shape: (3, 4)
+┌─────────┬─────┬─────────┬──────────┐
+│ product ┆ len ┆ qty_sum ┆ qty_mean │
+│ ---     ┆ --- ┆ ---     ┆ ---      │
+│ str     ┆ u32 ┆ i64     ┆ f64      │
+╞═════════╪═════╪═════════╪══════════╡
+│ pen     ┆ 2   ┆ 12      ┆ 6.0      │
+│ book    ┆ 2   ┆ 14      ┆ 7.0      │
+│ poster  ┆ 1   ┆ 46      ┆ 46.0     │
+└─────────┴─────┴─────────┴──────────┘
+>>> sales.group_by("company", "product").agg(
+...     pl.col("quantity").alias("qty_sum").sum(),
+...     pl.col("quantity").alias("qty_std").std()
+... )
+shape: (731, 4)
+┌────────────┬─────────┬─────────┬───────────┐
+│ company    ┆ product ┆ qty_sum ┆ qty_std   │
+│ ---        ┆ ---     ┆ ---     ┆ ---       │
+│ str        ┆ str     ┆ i64     ┆ f64       │
+╞════════════╪═════════╪═════════╪═══════════╡
+│ Browseblab ┆ poster  ┆ 15      ┆ null      │
+│ Zava       ┆ shirt   ┆ 48      ┆ null      │
+│ Rhynyx     ┆ poster  ┆ -3      ┆ null      │
+│ Avamba     ┆ book    ┆ 15      ┆ null      │
+│ Tazz       ┆ book    ┆ 38      ┆ 8.485281  │
+│ …          ┆ …       ┆ …       ┆ …         │
+│ Dablist    ┆ shirt   ┆ 92      ┆ 4.242641  │
+│ Npath      ┆ shirt   ┆ 56      ┆ 11.313708 │
+│ Quimm      ┆ book    ┆ 29      ┆ null      │
+│ Skinte     ┆ poster  ┆ 4       ┆ null      │
+│ Kwilith    ┆ poster  ┆ 5       ┆ null      │
+└────────────┴─────────┴─────────┴───────────┘
+>>> # Dealing with nulls
+>>> values = sales.group_by("company", "product").agg(
+...     pl.col("quantity").alias("qty_sum").sum(),
+...     pl.col("quantity").alias("qty_std").std()
+... )
+>>> values
+shape: (731, 4)
+┌───────────┬─────────┬─────────┬───────────┐
+│ company   ┆ product ┆ qty_sum ┆ qty_std   │
+│ ---       ┆ ---     ┆ ---     ┆ ---       │
+│ str       ┆ str     ┆ i64     ┆ f64       │
+╞═══════════╪═════════╪═════════╪═══════════╡
+│ Realpoint ┆ book    ┆ 71      ┆ 13.435029 │
+│ Browsebug ┆ shirt   ┆ 41      ┆ null      │
+│ Vidoo     ┆ shirt   ┆ 9       ┆ null      │
+│ Jamia     ┆ shirt   ┆ 21      ┆ 19.091883 │
+│ Yozio     ┆ book    ┆ 20      ┆ null      │
+│ …         ┆ …       ┆ …       ┆ …         │
+│ Aimbu     ┆ book    ┆ 16      ┆ 5.656854  │
+│ Gabtype   ┆ shirt   ┆ -1      ┆ null      │
+│ Zoovu     ┆ book    ┆ 15      ┆ null      │
+│ Wikivu    ┆ poster  ┆ 23      ┆ null      │
+│ Photobug  ┆ pen     ┆ 16      ┆ null      │
+└───────────┴─────────┴─────────┴───────────┘
+>>> values.fill_null(strategy="zero")
+shape: (731, 4)
+┌───────────┬─────────┬─────────┬───────────┐
+│ company   ┆ product ┆ qty_sum ┆ qty_std   │
+│ ---       ┆ ---     ┆ ---     ┆ ---       │
+│ str       ┆ str     ┆ i64     ┆ f64       │
+╞═══════════╪═════════╪═════════╪═══════════╡
+│ Realpoint ┆ book    ┆ 71      ┆ 13.435029 │
+│ Browsebug ┆ shirt   ┆ 41      ┆ 0.0       │
+│ Vidoo     ┆ shirt   ┆ 9       ┆ 0.0       │
+│ Jamia     ┆ shirt   ┆ 21      ┆ 19.091883 │
+│ Yozio     ┆ book    ┆ 20      ┆ 0.0       │
+│ …         ┆ …       ┆ …       ┆ …         │
+│ Aimbu     ┆ book    ┆ 16      ┆ 5.656854  │
+│ Gabtype   ┆ shirt   ┆ -1      ┆ 0.0       │
+│ Zoovu     ┆ book    ┆ 15      ┆ 0.0       │
+│ Wikivu    ┆ poster  ┆ 23      ┆ 0.0       │
+│ Photobug  ┆ pen     ┆ 16      ┆ 0.0       │
+└───────────┴─────────┴─────────┴───────────┘
+>>> values.fill_null(strategy="min")
+shape: (731, 4)
+┌───────────┬─────────┬─────────┬───────────┐
+│ company   ┆ product ┆ qty_sum ┆ qty_std   │
+│ ---       ┆ ---     ┆ ---     ┆ ---       │
+│ str       ┆ str     ┆ i64     ┆ f64       │
+╞═══════════╪═════════╪═════════╪═══════════╡
+│ Realpoint ┆ book    ┆ 71      ┆ 13.435029 │
+│ Browsebug ┆ shirt   ┆ 41      ┆ 0.0       │
+│ Vidoo     ┆ shirt   ┆ 9       ┆ 0.0       │
+│ Jamia     ┆ shirt   ┆ 21      ┆ 19.091883 │
+│ Yozio     ┆ book    ┆ 20      ┆ 0.0       │
+│ …         ┆ …       ┆ …       ┆ …         │
+│ Aimbu     ┆ book    ┆ 16      ┆ 5.656854  │
+│ Gabtype   ┆ shirt   ┆ -1      ┆ 0.0       │
+│ Zoovu     ┆ book    ┆ 15      ┆ 0.0       │
+│ Wikivu    ┆ poster  ┆ 23      ┆ 0.0       │
+│ Photobug  ┆ pen     ┆ 16      ┆ 0.0       │
+└───────────┴─────────┴─────────┴───────────┘
+>>> values.fill_null(strategy="max")
+shape: (731, 4)
+┌───────────┬─────────┬─────────┬───────────┐
+│ company   ┆ product ┆ qty_sum ┆ qty_std   │
+│ ---       ┆ ---     ┆ ---     ┆ ---       │
+│ str       ┆ str     ┆ i64     ┆ f64       │
+╞═══════════╪═════════╪═════════╪═══════════╡
+│ Realpoint ┆ book    ┆ 71      ┆ 13.435029 │
+│ Browsebug ┆ shirt   ┆ 41      ┆ 38.183766 │
+│ Vidoo     ┆ shirt   ┆ 9       ┆ 38.183766 │
+│ Jamia     ┆ shirt   ┆ 21      ┆ 19.091883 │
+│ Yozio     ┆ book    ┆ 20      ┆ 38.183766 │
+│ …         ┆ …       ┆ …       ┆ …         │
+│ Aimbu     ┆ book    ┆ 16      ┆ 5.656854  │
+│ Gabtype   ┆ shirt   ┆ -1      ┆ 38.183766 │
+│ Zoovu     ┆ book    ┆ 15      ┆ 38.183766 │
+│ Wikivu    ┆ poster  ┆ 23      ┆ 38.183766 │
+│ Photobug  ┆ pen     ┆ 16      ┆ 38.183766 │
+└───────────┴─────────┴─────────┴───────────┘
+>>> values.fill_null(strategy="mean")
+shape: (731, 4)
+┌───────────┬─────────┬─────────┬───────────┐
+│ company   ┆ product ┆ qty_sum ┆ qty_std   │
+│ ---       ┆ ---     ┆ ---     ┆ ---       │
+│ str       ┆ str     ┆ i64     ┆ f64       │
+╞═══════════╪═════════╪═════════╪═══════════╡
+│ Realpoint ┆ book    ┆ 71      ┆ 13.435029 │
+│ Browsebug ┆ shirt   ┆ 41      ┆ 13.810603 │
+│ Vidoo     ┆ shirt   ┆ 9       ┆ 13.810603 │
+│ Jamia     ┆ shirt   ┆ 21      ┆ 19.091883 │
+│ Yozio     ┆ book    ┆ 20      ┆ 13.810603 │
+│ …         ┆ …       ┆ …       ┆ …         │
+│ Aimbu     ┆ book    ┆ 16      ┆ 5.656854  │
+│ Gabtype   ┆ shirt   ┆ -1      ┆ 13.810603 │
+│ Zoovu     ┆ book    ┆ 15      ┆ 13.810603 │
+│ Wikivu    ┆ poster  ┆ 23      ┆ 13.810603 │
+│ Photobug  ┆ pen     ┆ 16      ┆ 13.810603 │
+└───────────┴─────────┴─────────┴───────────┘
+>>> values.shape
+(731, 4)
+>>> values.drop_nulls()
+shape: (209, 4)
+┌────────────┬─────────┬─────────┬───────────┐
+│ company    ┆ product ┆ qty_sum ┆ qty_std   │
+│ ---        ┆ ---     ┆ ---     ┆ ---       │
+│ str        ┆ str     ┆ i64     ┆ f64       │
+╞════════════╪═════════╪═════════╪═══════════╡
+│ Realpoint  ┆ book    ┆ 71      ┆ 13.435029 │
+│ Jamia      ┆ shirt   ┆ 21      ┆ 19.091883 │
+│ Wordtune   ┆ book    ┆ 39      ┆ 0.707107  │
+│ Zoomlounge ┆ shirt   ┆ 57      ┆ 28.991378 │
+│ Pixope     ┆ pen     ┆ 11      ┆ 12.020815 │
+│ …          ┆ …       ┆ …       ┆ …         │
+│ Gabspot    ┆ book    ┆ 31      ┆ 6.363961  │
+│ Layo       ┆ pen     ┆ 47      ┆ 14.849242 │
+│ Mynte      ┆ pen     ┆ 29      ┆ 16.263456 │
+│ Realblab   ┆ shirt   ┆ 28      ┆ 16.970563 │
+│ Aimbu      ┆ book    ┆ 16      ┆ 5.656854  │
+└────────────┴─────────┴─────────┴───────────┘
