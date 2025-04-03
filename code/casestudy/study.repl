@@ -791,8 +791,7 @@ shape: (3, 10)
 └─────────┴──────┴──────┴──────────┴───┴──────────┴───────────┴───────┴───────────────┘
 >>> gdp.write_csv("processed/gdp_report.csv")
 >>> # R&D Report
->>> rd = pl.read_csv("raw/expenditure.csv", columns=["LOCATION", "Country", "TIME", "Governm\
-ent"])
+>>> rd = pl.read_csv("raw/expenditure.csv", columns=["LOCATION", "Country", "TIME", "Government"])
 >>> rd
 shape: (1_331, 4)
 ┌──────────┬──────────────────────┬──────┬─────────────┐
@@ -1095,8 +1094,6 @@ shape: (64, 11)
 >>> gdp = gdp.with_columns(
 ...     spend_pct=pl.col("k_spend") / pl.col("gdp")
 ... )
->>> pl.Config.set_tbl_rows(-1)
-<class 'polars.config.Config'>
 >>> gdp.filter(pl.col("code") == "USA")
 shape: (64, 12)
 ┌─────────┬──────┬──────┬───────────┬───┬───────────┬───────────────┬───────────┬───────────┐

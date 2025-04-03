@@ -27,7 +27,7 @@ shape: (3, 4)
 'AGGREGATE\n\t[len(), col("quantity").sum().alias("qty_sum"), col("quantity").mean().alias("qty_mean")] BY [col("product")] FROM\n  simple π 3/3 ["quantity", "product", ... 1 other column]\n    Csv SCAN [data/sales.csv]\n    PROJECT 3/7 COLUMNS\n    SELECTION: [(col("company")) == (String(Viva))]'
 >>> print(query.explain())
 AGGREGATE
-	[len(), col("quantity").sum().alias("qty_sum"), col("quantity").mean().alias("qty_mean")] BY [col("product")] FROM
+    [len(), col("quantity").sum().alias("qty_sum"), col("quantity").mean().alias("qty_mean")] BY [col("product")] FROM
   simple π 3/3 ["quantity", "product", ... 1 other column]
     Csv SCAN [data/sales.csv]
     PROJECT 3/7 COLUMNS

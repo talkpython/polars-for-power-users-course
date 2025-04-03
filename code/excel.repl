@@ -251,17 +251,17 @@ shape: (1_001, 9)
 shape: (1_001,)
 Series: 'Country' [str]
 [
-	"USA"
-	"USA"
-	"USA"
-	"USA"
-	"USA"
-	…
-	"USA"
-	"USA"
-	"USA"
-	"USA"
-	"CAN"
+    "USA"
+    "USA"
+    "USA"
+    "USA"
+    "USA"
+    …
+    "USA"
+    "USA"
+    "USA"
+    "USA"
+    "CAN"
 ]
 >>> country = pl.Series("country", Country)
 >>> # REPLACE!!!!

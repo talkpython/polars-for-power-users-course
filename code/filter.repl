@@ -116,17 +116,17 @@ TypeError: invalid predicate for `filter`: shape: (1_000, 1)
 shape: (1_000,)
 Series: 'company' [bool]
 [
-	false
-	false
-	false
-	false
-	false
-	…
-	true
-	true
-	false
-	false
-	false
+    false
+    false
+    false
+    false
+    false
+    …
+    true
+    true
+    false
+    false
+    false
 ]
 >>> sales.filter(viva)
 shape: (5, 7)
@@ -146,17 +146,17 @@ shape: (5, 7)
 shape: (1_000,)
 Series: 'quantity' [bool]
 [
-	true
-	true
-	false
-	false
-	true
-	…
-	false
-	true
-	true
-	true
-	true
+    true
+    true
+    false
+    false
+    true
+    …
+    false
+    true
+    true
+    true
+    true
 ]
 >>> sales.filter(viva, qty_10)
 shape: (2, 7)

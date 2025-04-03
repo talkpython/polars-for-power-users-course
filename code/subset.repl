@@ -2,7 +2,7 @@
 >>> pl.read_excel("data/complicated.xlsx")
 Traceback (most recent call last):
   File "<python-input-1>", line 1, in <module>
-    messy = pl.read_excel("data/complicated.xlsx")
+    pl.read_excel("data/complicated.xlsx")
   File "/Users/TP/lib/python3.13/site-packages/polars/_utils/deprecation.py", line 92, in wrapper
     return function(*args, **kwargs)
   File "/Users/TP/lib/python3.13/site-packages/polars/_utils/deprecation.py", line 92, in wrapper
@@ -117,8 +117,7 @@ shape: (353, 8)
 │ Zooxo     ┆ null      ┆ platinum  ┆ 99645     ┆ 3        ┆ 1        ┆ 2019     ┆ 80%      │
 │ Zoozzy    ┆ null      ┆ gold      ┆ 00012     ┆ 3        ┆ 1        ┆ 2019     ┆ 105%     │
 └───────────┴───────────┴───────────┴───────────┴──────────┴──────────┴──────────┴──────────┘
->>> pl.read_excel("data/complicated.xlsx", sheet_name="levels", read_options={"header\
-_row":2})
+>>> pl.read_excel("data/complicated.xlsx", sheet_name="levels", read_options={"header_row":2})
 shape: (351, 8)
 ┌───────────┬───────────┬──────────┬─────────┬───────────┬───────────┬───────────┬──────────┐
 │ Company   ┆ Notes     ┆ level    ┆ ZipCode ┆ update_mo ┆ update_da ┆ update_ye ┆ pct_to_t │
@@ -140,8 +139,8 @@ shape: (351, 8)
 │ Zooxo     ┆ null      ┆ platinum ┆ 99645   ┆ 3         ┆ 1         ┆ 2019      ┆ 80%      │
 │ Zoozzy    ┆ null      ┆ gold     ┆ 00012   ┆ 3         ┆ 1         ┆ 2019      ┆ 105%     │
 └───────────┴───────────┴──────────┴─────────┴───────────┴───────────┴───────────┴──────────┘
->>> pl.read_excel("data/complicated.xlsx", sheet_name="levels", read_options={"header\
-_row":2}, columns="A,C:H")
+>>> messy = pl.read_excel("data/complicated.xlsx", sheet_name="levels", read_options={"header_row":2}, columns="A,C:H")
+>>> messy
 shape: (351, 7)
 ┌──────────────┬──────────┬─────────┬──────────────┬────────────┬─────────────┬─────────────┐
 │ Company Name ┆ level    ┆ ZipCode ┆ update_month ┆ update_day ┆ update_year ┆ pct_to_targ │
@@ -222,7 +221,6 @@ shape: (351, 1)
 ...     "company": ["Abatz", "Aibox"],
 ...     "zip": [14150, 4442],
 ... }
->>>
 >>> zips = pl.DataFrame(data)
 >>> zips
 shape: (2, 2)

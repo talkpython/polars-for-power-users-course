@@ -28,10 +28,10 @@ shape: (1, 7)
 ╞═════════╪═════════╪═══════════════╪═════════╪══════════╪═══════╪═══════╡
 │ 1000    ┆ 1000    ┆ 1000          ┆ 1000    ┆ 1000     ┆ 1000  ┆ 1000  │
 └─────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┘
->>> sales.filter(pl.col("purchase_data").dt.month()==3)
+>>> sales.filter(pl.col("purchase_date").dt.month()==3)
 Traceback (most recent call last):
-  File "<python-input-5>", line 1, in <module>
-    sales.filter(pl.col("purchase_data").dt.month()==3)
+  File "<python-input-4>", line 1, in <module>
+    sales.filter(pl.col("purchase_date").dt.month()==3)
     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/Users/TP/lib/python3.13/site-packages/polars/dataframe/frame.py", line 5101, in filter
     return self.lazy().filter(*predicates, **constraints).collect(_eager=True)
@@ -39,12 +39,7 @@ Traceback (most recent call last):
   File "/Users/TP/lib/python3.13/site-packages/polars/lazyframe/frame.py", line 2065, in collect
     return wrap_df(ldf.collect(callback))
                    ~~~~~~~~~~~^^^^^^^^^^
-polars.exceptions.ColumnNotFoundError: unable to find column "purchase_data"; valid columns: ["invoice", "company", "purchase_date", "product", "quantity", "price", "total"]
-
-Resolved plan until failure:
-
-	---> FAILED HERE RESOLVING 'filter' <---
-DF ["invoice", "company", "purchase_date", "product", ...]; PROJECT */7 COLUMNS
+polars.exceptions.InvalidOperationError: `month` operation not supported for dtype `str`
 >>> sales.schema
 Schema({'invoice': String, 'company': String, 'purchase_date': String, 'product': String, 'quantity': Int64, 'price': Int64, 'total': Int64})
 >>> sales.filter(pl.col("purchase_date").cast(pl.Date).dt.month()==3)

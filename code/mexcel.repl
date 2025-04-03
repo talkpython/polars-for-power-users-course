@@ -63,7 +63,7 @@ shape: (1_000, 11)
 │ VT-754-54 ┆ Photobean ┆ 2019-12-30    ┆ shirt   ┆ … ┆ 2019 ┆ 12    ┆ 30  ┆ 4       │
 │ LS-463-74 ┆ Mybuzz    ┆ 2019-11-12    ┆ shirt   ┆ … ┆ 2019 ┆ 11    ┆ 12  ┆ 4       │
 └───────────┴───────────┴───────────────┴─────────┴───┴──────┴───────┴─────┴─────────┘
->>> # Other accessors
+>>> # Other accessor methods
 >>> date_string = sales.select(pl.col("purchase_date").alias("date").dt.to_string())
 >>> date_string
 shape: (1_000, 1)
