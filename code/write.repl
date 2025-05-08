@@ -16,6 +16,7 @@ shape: (5, 7)
 └───────────┴─────────┴───────────────┴─────────┴──────────┴───────┴───────┘
 >>> viva.write_excel()
 <xlsxwriter.workbook.Workbook object at 0x107f0ecf0>
+>>> from xlsxwriter.workbook import Workbook
 >>> with Workbook("processed/viva.xlsx") as wb:
 ...     viva.write_excel(
 ...         workbook=wb,
